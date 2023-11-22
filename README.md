@@ -1,6 +1,6 @@
 # Quasar App (School Web)
 
-A Quasar Project
+A School Web Project
 
 ## Prerequisites
 
