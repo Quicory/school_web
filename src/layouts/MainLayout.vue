@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <!-- <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
         <q-btn
@@ -9,98 +9,222 @@
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
+        /> -->
+
+  <!-- <q-layout
+    view="hHh Lpr lff"
+    container
+    style="height: 300px"
+    class="shadow-2 rounded-borders"
+  >
+    <q-header elevated :class="$q.dark.isActive ? 'bg-secondary' : 'bg-black'">
+      <q-toolbar>
+        <q-btn
+          flat
+          @click="leftDrawerOpen = !leftDrawerOpen"
+          round
+          dense
+          icon="menu"
         />
+        <q-toolbar-title> School Web</q-toolbar-title>
 
-        <q-toolbar-title> School Web </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <div>{{ user.username }} {{ user.completename }}</div>
       </q-toolbar>
-    </q-header>
+    </q-header> -->
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header> Enlaces de la Escuela </q-item-label>
+  <!-- <q-toolbar-title> School Web </q-toolbar-title> -->
 
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+  <!-- <div>{{ user.username }} {{ user.completename }}</div>
+      </q-toolbar>
+    </q-header> -->
+
+  <!-- <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+      <q-list dense bordered padding class="rounded-borders">
+        <q-item-label header v-ripple
+          ><strong>Enlaces de la Escuela</strong>
+        </q-item-label>
+        <q-separator />
+        <q-item clickable v-ripple>
+          <q-item-section> Maestros </q-item-section>
+        </q-item>
       </q-list>
-    </q-drawer>
+    </q-drawer> -->
 
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+  <!-- <div class="q-pa-md">
+    <q-layout
+      view="hHh Lpr lff"
+      container
+      style="height: 100%"
+      class="shadow-2 rounded-borders"
+    >
+      <q-header
+        elevated
+        :class="$q.dark.isActive ? 'bg-secondary' : 'bg-black'"
+      >
+        <q-toolbar>
+          <q-btn
+            flat
+            @click="leftDrawerOpen = !leftDrawerOpen"
+            round
+            dense
+            icon="menu"
+          />
+          <q-toolbar-title> School Web </q-toolbar-title>
+
+          <div>{{ user.username }} {{ user.completename }}</div>
+        </q-toolbar>
+      </q-header>
+
+      <q-drawer
+        v-model="leftDrawerOpen"
+        show-if-above
+        :width="200"
+        :breakpoint="500"
+        bordered
+        :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
+      >
+        <q-scroll-area class="fit">
+          <q-list>
+            <template v-for="(menuItem, index) in menuList" :key="index">
+              <q-item clickable :active="menuItem.label === 'Outbox'" v-ripple>
+                <q-item-section avatar>
+                  <q-icon :name="menuItem.icon" />
+                </q-item-section>
+                <q-item-section>
+                  {{ menuItem.label }}
+                </q-item-section>
+              </q-item>
+              <q-separator :key="'sep' + index" v-if="menuItem.separator" />
+            </template>
+          </q-list>
+        </q-scroll-area>
+      </q-drawer>
+
+      <q-page-container>
+        <router-view />
+      </q-page-container>
+    </q-layout>
+  </div> -->
+  <div class="q-pa-xs">
+    <q-layout
+      view="hHh Lpr lff"
+      container
+      style="height: 99vh"
+      class="shadow-2 rounded-borders"
+    >
+      <q-header
+        elevated
+        :class="$q.dark.isActive ? 'bg-secondary' : 'bg-black'"
+      >
+        <q-toolbar>
+          <q-btn
+            flat
+            @click="leftDrawerOpen = !leftDrawerOpen"
+            round
+            dense
+            icon="menu"
+          />
+          <q-toolbar-title @click="$router.push({ name: 'Home' })">
+            School Web
+          </q-toolbar-title>
+
+          <div>{{ user.username }} ({{ user.completename }})</div>
+        </q-toolbar>
+      </q-header>
+
+      <q-drawer
+        v-model="leftDrawerOpen"
+        show-if-above
+        :width="200"
+        :breakpoint="500"
+        bordered
+        :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
+      >
+        <q-scroll-area class="fit">
+          <q-list>
+            <template v-for="(menuItem, index) in menuList" :key="index">
+              <q-item
+                clickable
+                :active="menuItem.label === 'Outbox'"
+                v-ripple
+                :to="{ name: menuItem.name }"
+              >
+                <q-item-section avatar>
+                  <q-icon :name="menuItem.icon" />
+                </q-item-section>
+                <q-item-section>
+                  {{ menuItem.label }}
+                </q-item-section>
+              </q-item>
+              <q-separator :key="'sep' + index" v-if="menuItem.separator" />
+            </template>
+          </q-list>
+        </q-scroll-area>
+      </q-drawer>
+
+      <q-page-container>
+        <q-page padding>
+          <router-view />
+        </q-page>
+      </q-page-container>
+    </q-layout>
+  </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
-import EssentialLink from 'components/EssentialLink.vue';
+<script setup lang="ts">
+import { ref } from 'vue';
+import { userStore } from 'src/stores/userStore';
 
-const linksList = [
+const { user } = userStore();
+
+const leftDrawerOpen = ref(false);
+
+const menuList = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
+    icon: 'fa-solid fa-chalkboard-user',
+    label: 'Maestros',
+    name: 'Teachers',
+    separator: false,
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
+    icon: 'fa-solid fa-file-signature',
+    label: 'Asignaturas',
+    name: 'Subjects',
+    separator: true,
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
+    icon: 'fa-solid fa-user-graduate',
+    label: 'Estudiantes',
+    name: 'Students',
+    separator: false,
   },
   {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
+    icon: 'fa-solid fa-school-flag',
+    label: 'Aulas',
+    name: 'Classrooms',
+    separator: true,
   },
   {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
+    icon: 'fa-solid fa-pencil',
+    label: 'Asignación de Maestros a Aulas',
+    name: 'Assign',
+    separator: true,
   },
   {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
+    icon: 'fa-solid fa-unlock-keyhole',
+    label: 'Cambiar Clave',
+    name: 'Change',
+    separator: true,
   },
   {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
+    icon: 'fa-solid fa-user-check',
+    label: 'Usuarios',
+    name: 'User',
+    separator: true,
   },
 ];
 
-export default defineComponent({
-  name: 'MainLayout',
-
-  components: {
-    EssentialLink,
-  },
-
-  setup() {
-    const leftDrawerOpen = ref(false);
-
-    return {
-      essentialLinks: linksList,
-      leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
-    };
-  },
-});
+// function toggleLeftDrawer() {
+//   leftDrawerOpen.value = !leftDrawerOpen.value;
+// }
 </script>
