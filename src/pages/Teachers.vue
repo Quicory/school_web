@@ -174,7 +174,6 @@ const pagination = ref({
   rowsPerPage: 10,
   rowsNumber: 0,
 });
-const confirm = ref(false);
 
 const showDialog = (modo: string, data: Teacher) => {
   $q.dialog({

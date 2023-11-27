@@ -50,6 +50,7 @@ export const useAssignClassroom = () => {
   };
 
   const assignClassroomSave = async (
+    id: number,
     newAssignClassroom: AssignClassroomNew
   ): Promise<AssignClassroomResponseOne> => {
     $q.loading.show({
@@ -57,8 +58,7 @@ export const useAssignClassroom = () => {
       message: 'Procesando...',
       html: true,
     });
-
-    const rep = await getAssignClassroomNew(newAssignClassroom);
+    const rep = await getAssignClassroomNew(id, newAssignClassroom);
 
     $q.loading.hide();
 

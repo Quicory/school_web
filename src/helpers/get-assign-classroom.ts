@@ -60,15 +60,16 @@ export const getAssignClassroomID = async (
 };
 
 export const getAssignClassroomNew = async (
-  teacher: AssignClassroomNew
+  id: number,
+  assignClassroom: AssignClassroomNew
 ): Promise<AssignClassroomResponseOne> => {
   const token = LocalStorage.getItem('token');
   api.defaults.headers.common = { Authorization: `bearer ${token}` };
 
   try {
     const { data } = await api.post<AssignClassroomResponseOne>(
-      '/api/AssignClassroom',
-      teacher
+      `/api/AssignClassroom/${id}`,
+      assignClassroom
     );
     return data;
   } catch (error) {
@@ -83,7 +84,7 @@ export const getAssignClassroomNew = async (
 
 export const getAssignClassroomEdit = async (
   id: number,
-  teacher: AssignClassroomNew
+  assignClassroom: AssignClassroomNew
 ): Promise<AssignClassroomResponseOne> => {
   const token = LocalStorage.getItem('token');
   api.defaults.headers.common = { Authorization: `bearer ${token}` };
@@ -91,7 +92,7 @@ export const getAssignClassroomEdit = async (
   try {
     const { data } = await api.put<AssignClassroomResponseOne>(
       `/api/AssignClassroom/${id}`,
-      teacher
+      assignClassroom
     );
     return data;
   } catch (error) {

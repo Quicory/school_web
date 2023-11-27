@@ -263,6 +263,11 @@ const callSave = async () => {
     const resp = await teacherSave(save);
     if (resp.isValid) {
       onDialogOK(resp.result);
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: resp.message,
+      });
     }
   } else {
     const id = payload.id;
@@ -271,6 +276,11 @@ const callSave = async () => {
     const resp = await teacherUpdate(id, save);
     if (resp.isValid) {
       onDialogOK(resp.result);
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: resp.message,
+      });
     }
   }
   // or with payload: onDialogOK({ ... })
@@ -296,6 +306,11 @@ const callDelete = async () => {
   const resp = await getTeacherDelByID(payload.id);
   if (resp.isValid) {
     onDialogOK(resp.result);
+  } else {
+    $q.notify({
+      type: 'negative',
+      message: resp.message,
+    });
   }
 };
 

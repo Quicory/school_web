@@ -222,7 +222,7 @@ const menuList = [
   {
     icon: 'fa-solid fa-pencil',
     label: 'Asignación de Maestros a Aulas',
-    name: 'Assign',
+    name: 'AssignClassrooms',
     separator: true,
   },
   {

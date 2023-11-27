@@ -26,21 +26,39 @@
           </q-card-section>
 
           <q-card-section style="padding-bottom: 0 !important">
-            <q-input
+            <q-select
               filled
-              readonly
-              label="Nombre"
-              v-model="dataCard.firstname"
-              type="text"
-              clearable
+              emit-value
+              map-options
+              options-dense
+              v-model="dataCard.id"
               :dense="dense"
+              input-debounce="1000"
+              :options="optionsTeacher"
+              no-error-icon
+              label="Select Maestro"
+              option-value="id"
+              option-label="firstname"
               lazy-rules
               :rules="[
                 (val) =>
-                  (val && val.length > 0) ||
-                  'El nombre no deber estar en blanco.',
+                  (val && val > 0) || 'El nombre no deber estar en blanco.',
               ]"
-            />
+              @update:model-value="(v) => selectTeacher(v)"
+            >
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section>
+                    <q-item-label
+                      ><strong
+                        >{{ scope.opt.firstname }}
+                        {{ scope.opt.lastname }}</strong
+                      ></q-item-label
+                    >
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
 
             <q-input
               filled
@@ -101,7 +119,7 @@
               :options="optionsClassrooms"
               use-chips
               stack-label
-              label="Asignatura"
+              label="Aulas"
               option-value="id"
               option-label="name"
             />
@@ -143,9 +161,11 @@ import {
   AssignClassroom,
   Paging,
   AssignClassroomNew,
+  Teacher,
 } from 'src/interfaces';
 import { useAssignClassroom } from 'src/composables/useAssignClassroom';
 import { getClassroom } from 'src/helpers/get-classroom';
+import { getTeacher } from 'src/helpers/get-teacher';
 
 const {
   getAssignClassroomByID,
@@ -214,6 +234,18 @@ const cardX = <AssignClassroom>{
 
 const dataCard = ref(cardX);
 const optionsClassrooms = ref<Classroom[]>([]);
+const optionsTeacher = ref<Teacher[]>([]);
+
+const selectTeacher = async (value: number) => {
+  let opt = await optionsTeacher.value.filter((x) => x.id === value)[0];
+  if (opt) {
+    const teach = <AssignClassroom>JSON.parse(JSON.stringify(opt));
+    dataCard.value.lastname = teach.lastname;
+    dataCard.value.email = teach.email;
+    dataCard.value.profession = teach.profession;
+    dataCard.value.classrooms = teach.classrooms;
+  }
+};
 
 onMounted(async () => {
   const resp = await getClassroom(<Paging>{
@@ -224,6 +256,16 @@ onMounted(async () => {
   });
   if (resp.isValid) {
     optionsClassrooms.value = resp.result.items;
+  }
+
+  const resp2 = await getTeacher(<Paging>{
+    Page: 1,
+    PageSize: 99999999,
+    FieldOrder: 'Name',
+    IsAsc: true,
+  });
+  if (resp2.isValid) {
+    optionsTeacher.value = resp2.result.items;
   }
 
   //
@@ -269,9 +311,14 @@ const callSave = async () => {
     // delete payload.id;
     const save = convertRecord(payload);
 
-    const resp = await assignClassroomSave(save);
+    const resp = await assignClassroomSave(payload.id, save);
     if (resp.isValid) {
       onDialogOK(resp.result);
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: resp.message,
+      });
     }
   } else {
     const id = payload.id;
@@ -280,6 +327,11 @@ const callSave = async () => {
     const resp = await assignClassroomUpdate(id, save);
     if (resp.isValid) {
       onDialogOK(resp.result);
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: resp.message,
+      });
     }
   }
   // or with payload: onDialogOK({ ... })
@@ -288,10 +340,6 @@ const callSave = async () => {
 
 const convertRecord = (payload: AssignClassroom): AssignClassroomNew => {
   return {
-    firstName: payload.firstname,
-    lastName: payload.lastname,
-    email: payload.email,
-    profession: payload.profession,
     detail: payload.classrooms.map((x: Classroom) => {
       return x.id;
     }),
@@ -299,12 +347,15 @@ const convertRecord = (payload: AssignClassroom): AssignClassroomNew => {
 };
 
 const callDelete = async () => {
-  console.log('Estoy en callDelete');
   let payload = JSON.parse(JSON.stringify(dataCard.value));
-  console.log(payload);
   const resp = await getAssignClassroomDelByID(payload.id);
   if (resp.isValid) {
     onDialogOK(resp.result);
+  } else {
+    $q.notify({
+      type: 'negative',
+      message: resp.message,
+    });
   }
 };
 
