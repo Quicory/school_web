@@ -234,7 +234,7 @@ const menuList = [
   {
     icon: 'fa-solid fa-user-check',
     label: 'Usuarios',
-    name: 'User',
+    name: 'Users',
     separator: true,
   },
 ];

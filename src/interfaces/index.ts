@@ -26,3 +26,9 @@ export type { AssignClassroomResponse } from './assign-classroom/assign-classroo
 export type { AssignClassroomResponseOne } from './assign-classroom/assign-classroom-response-one';
 export type { AssignClassroom } from './assign-classroom/assign-classroom';
 export type { AssignClassroomNew } from './assign-classroom/assign-classroom-new';
+
+export type { UserResponse } from './user/user-response';
+export type { UserResponseOne } from './user/user-response-one';
+export type { UserComplete } from './user/user';
+export type { UserNew } from './user/user-new';
+export type { UserEdit } from './user/user-edit';
