@@ -21,7 +21,7 @@
               />
             </div>
             <div class="col-10.5 col-md-12 text-h6">
-              Maestros ({{ modoLetrero }})
+              Estudiantes ({{ modoLetrero }})
             </div>
           </q-card-section>
 
@@ -58,30 +58,116 @@
               ]"
             />
 
+            <!-- <q-input
+              :readonly="isRead"
+              filled
+              v-model="dataCard.birthdate"
+              :dense="dense"
+              label="Fecha Nacimiento"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'La Fecha de Nacimiento no debe estar en blanco.',
+              ]"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy
+                    ref="dataCard.birthdateDateProxy"
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-date v-model="dataCard.birthdate" mask="DD-MM-YYYY">
+                      <div class="row items-center justify-end">
+                        <q-btn
+                          v-close-popup
+                          label="Close"
+                          color="primary"
+                          flat
+                        />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input> -->
+
+            <!-- v-model="dataCard.birthdate" -->
+
+            <!-- <q-input
+              filled
+              v-model="dataCard.birthdate"
+              :dense="dense"
+              :readonly="isRead"
+              mask="date"
+              lazy-rules
+              :rules="['date']"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-date v-model="dataCard.birthdate">
+                      <div class="row items-center justify-end">
+                        <q-btn
+                          v-close-popup
+                          label="Close"
+                          color="primary"
+                          flat
+                        />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input> -->
+
             <q-input
               filled
-              :readonly="isRead"
-              label="Correo"
-              v-model="dataCard.email"
-              type="email"
-              clearable
+              label="Fecha Nacimiento"
+              v-model="dataCard.birthdate"
               :dense="dense"
-              :rules="[
-                (val) => !!val || 'El Correo no debe estar en blanco.',
-                (val) =>
-                  (!!val && val.length <= 600) ||
-                  'El Correo no de tener mas de 600 caracteres.',
-                (val) =>
-                  (!!val && validateEmail(val)) || 'Debe ser un correo válido.',
-              ]"
+              :readonly="isRead"
               lazy-rules
-            />
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'La Fecha Nacimiento no debe estar en blanco.',
+              ]"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy
+                    ref="qDateProxy"
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-date v-model="dataCard.birthdate" mask="DD-MM-YYYY">
+                      <div class="row items-center justify-end">
+                        <q-btn
+                          v-close-popup
+                          label="Close"
+                          color="primary"
+                          flat
+                        />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
 
             <q-input
               filled
               :readonly="isRead"
-              label="Profesión"
-              v-model="dataCard.profession"
+              label="Matrícula"
+              v-model="dataCard.idnumber"
               type="text"
               clearable
               :dense="dense"
@@ -89,21 +175,56 @@
               :rules="[
                 (val) =>
                   (val && val.length > 0) ||
-                  'La Profesión no debe estar en blanco.',
+                  'La Matrícula no debe estar en blanco.',
               ]"
             />
 
-            <q-select
+            <q-input
               filled
               :readonly="isRead"
-              v-model="dataCard.subjects"
-              multiple
-              :options="optionsSubjects"
-              use-chips
-              stack-label
-              label="Asignatura"
-              option-value="id"
-              option-label="name"
+              label="Nombre Padre"
+              v-model="dataCard.fathername"
+              type="text"
+              clearable
+              :dense="dense"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'El Nombre Padre no debe estar en blanco.',
+              ]"
+            />
+
+            <q-input
+              filled
+              :readonly="isRead"
+              label="Nombre Madre"
+              v-model="dataCard.mothername"
+              type="text"
+              clearable
+              :dense="dense"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'El Nombre Madre no debe estar en blanco.',
+              ]"
+            />
+
+            <q-input
+              filled
+              :readonly="isRead"
+              label="Dirección"
+              v-model="dataCard.address"
+              type="text"
+              clearable
+              :dense="dense"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'La Dirección no debe estar en blanco.',
+              ]"
             />
           </q-card-section>
 
@@ -136,14 +257,14 @@ import { onMounted, ref } from 'vue';
 import {
   isReadOnly,
   mappingObject,
-  validateEmail,
+  getFechaString,
+  getFechaStringSave,
 } from 'src/helpers/customFunctions';
-import { Subject, Teacher, Paging, TeacherNew } from 'src/interfaces';
-import { useTeacher } from 'src/composables/useTeacher';
-import { getSubject } from 'src/helpers/get-subject';
+import { Student, StudentNew } from 'src/interfaces';
+import { useStudent } from 'src/composables/useStudent';
 
-const { getTeacherByID, teacherSave, teacherUpdate, getTeacherDelByID } =
-  useTeacher();
+const { getStudentByID, studentSave, studentUpdate, getStudentDelByID } =
+  useStudent();
 
 const props = defineProps({
   modo: {
@@ -194,29 +315,19 @@ function confirm() {
     });
 }
 
-const cardX = <Teacher>{
+const cardX = <Student>{
   id: 0,
   firstname: '',
   lastname: '',
-  email: '',
-  profession: '',
-  subjects: [],
+  birthdate: '', //date.formatDate(now.toString(), 'DD-MM-YYYY'),
+  idnumber: '',
+  fathername: '',
+  mothername: '',
+  address: '',
 };
-
 const dataCard = ref(cardX);
-const optionsSubjects = ref<Subject[]>([]);
 
 onMounted(async () => {
-  const resp = await getSubject(<Paging>{
-    Page: 1,
-    PageSize: 99999999,
-    FieldOrder: 'Name',
-    IsAsc: true,
-  });
-  if (resp.isValid) {
-    optionsSubjects.value = resp.result.items;
-  }
-
   //
   isRead.value = await isReadOnly(props.modo);
   const d = {
@@ -226,9 +337,11 @@ onMounted(async () => {
     dataCard.value = d;
     modoLetrero.value = 'AGREGANDO';
   } else {
-    const resp = await getTeacherByID(props.registro.id);
+    const resp = await getStudentByID(props.registro.id);
     if (resp.isValid) {
-      dataCard.value = <Teacher>mappingObject(d, resp.result);
+      dataCard.value = <Student>mappingObject(d, resp.result);
+      console.log('fecha', dataCard.value.birthdate);
+      dataCard.value.birthdate = await getFechaString(dataCard.value.birthdate);
     } else dataCard.value = d;
 
     if (props.modo == 'EDIT') {
@@ -255,12 +368,12 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
 const callSave = async () => {
   // on OK, it is REQUIRED to
   // call onDialogOK (with optional payload)
-  const payload = <Teacher>JSON.parse(JSON.stringify(dataCard.value));
+  const payload = <Student>JSON.parse(JSON.stringify(dataCard.value));
   if (props.modo == 'NEW') {
     // delete payload.id;
     const save = convertRecord(payload);
 
-    const resp = await teacherSave(save);
+    const resp = await studentSave(save);
     if (resp.isValid) {
       onDialogOK(resp.result);
     }
@@ -268,7 +381,7 @@ const callSave = async () => {
     const id = payload.id;
     const save = convertRecord(payload);
 
-    const resp = await teacherUpdate(id, save);
+    const resp = await studentUpdate(id, save);
     if (resp.isValid) {
       onDialogOK(resp.result);
     }
@@ -277,30 +390,29 @@ const callSave = async () => {
   // ...and it will also hide the dialog automatically
 };
 
-const convertRecord = (payload: Teacher): TeacherNew => {
+const convertRecord = (payload: Student): StudentNew => {
   return {
-    firstName: payload.firstname,
-    lastName: payload.lastname,
-    email: payload.email,
-    profession: payload.profession,
-    detail: payload.subjects.map((x: Subject) => {
-      return x.id;
-    }),
+    firstname: payload.firstname,
+    lastname: payload.lastname,
+    birthdate: getFechaStringSave(payload.birthdate),
+    idnumber: payload.idnumber,
+    fathername: payload.fathername,
+    mothername: payload.mothername,
+    address: payload.address,
   };
 };
 
 const callDelete = async () => {
-  console.log('Estoy en callDelete');
   let payload = JSON.parse(JSON.stringify(dataCard.value));
-  console.log(payload);
-  const resp = await getTeacherDelByID(payload.id);
+
+  const resp = await getStudentDelByID(payload.id);
   if (resp.isValid) {
     onDialogOK(resp.result);
   }
 };
 
 const onOKClick = () => {
-  myForm.value.validate().then((success: Teacher) => {
+  myForm.value.validate().then((success: Student) => {
     if (success) {
       console.info('success');
       callSave();

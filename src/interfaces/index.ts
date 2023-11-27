@@ -11,3 +11,18 @@ export type { SubjectResponse } from './subject/subject-response';
 export type { SubjectResponseOne } from './subject/subject-response-one';
 export type { Subject } from './subject/subject';
 export type { SubjectNew } from './subject/subject-new';
+
+export type { StudentResponse } from './student/student-response';
+export type { StudentResponseOne } from './student/student-response-one';
+export type { Student } from './student/student';
+export type { StudentNew } from './student/student-new';
+
+export type { ClassroomResponse } from 'src/interfaces/classroom/classroom-response';
+export type { ClassroomResponseOne } from 'src/interfaces/classroom/classroom-response-one';
+export type { Classroom } from 'src/interfaces/classroom/classroom';
+export type { ClassroomNew } from 'src/interfaces/classroom/classroom-new';
+
+export type { AssignClassroomResponse } from './assign-classroom/assign-classroom-response';
+export type { AssignClassroomResponseOne } from './assign-classroom/assign-classroom-response-one';
+export type { AssignClassroom } from './assign-classroom/assign-classroom';
+export type { AssignClassroomNew } from './assign-classroom/assign-classroom-new';

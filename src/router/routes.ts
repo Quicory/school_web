@@ -25,6 +25,24 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/Subjects.vue'),
         meta: { title: 'Asignaturas', requiresAuth: true },
       },
+      {
+        path: 'Students',
+        name: 'Students',
+        component: () => import('pages/Students.vue'),
+        meta: { title: 'Estudiantes', requiresAuth: true },
+      },
+      {
+        path: 'Classrooms',
+        name: 'Classrooms',
+        component: () => import('pages/Classrooms.vue'),
+        meta: { title: 'Aulas', requiresAuth: true },
+      },
+      {
+        path: 'AssignClassrooms',
+        name: 'AssignClassrooms',
+        component: () => import('pages/AssignClassrooms.vue'),
+        meta: { title: 'Asignación de Aulas', requiresAuth: true },
+      },
     ],
   },
   {

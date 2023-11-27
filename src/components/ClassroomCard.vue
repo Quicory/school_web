@@ -21,7 +21,7 @@
               />
             </div>
             <div class="col-10.5 col-md-12 text-h6">
-              Maestros ({{ modoLetrero }})
+              Aulas ({{ modoLetrero }})
             </div>
           </q-card-section>
 
@@ -30,7 +30,7 @@
               filled
               :readonly="isRead"
               label="Nombre"
-              v-model="dataCard.firstname"
+              v-model="dataCard.name"
               type="text"
               clearable
               :dense="dense"
@@ -45,8 +45,24 @@
             <q-input
               filled
               :readonly="isRead"
-              label="Apellido"
-              v-model="dataCard.lastname"
+              label="Capacidad"
+              v-model="dataCard.capacity"
+              type="number"
+              clearable
+              :dense="dense"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val > 0) ||
+                  'La Capacidad no debe ser menor o igual cero.',
+              ]"
+            />
+
+            <q-input
+              filled
+              :readonly="isRead"
+              label="Ubicación"
+              v-model="dataCard.location"
               type="text"
               clearable
               :dense="dense"
@@ -54,56 +70,8 @@
               :rules="[
                 (val) =>
                   (val && val.length > 0) ||
-                  'El apellido no deber estar en blanco.',
+                  'La Capacidad no deber estar en blanco.',
               ]"
-            />
-
-            <q-input
-              filled
-              :readonly="isRead"
-              label="Correo"
-              v-model="dataCard.email"
-              type="email"
-              clearable
-              :dense="dense"
-              :rules="[
-                (val) => !!val || 'El Correo no debe estar en blanco.',
-                (val) =>
-                  (!!val && val.length <= 600) ||
-                  'El Correo no de tener mas de 600 caracteres.',
-                (val) =>
-                  (!!val && validateEmail(val)) || 'Debe ser un correo válido.',
-              ]"
-              lazy-rules
-            />
-
-            <q-input
-              filled
-              :readonly="isRead"
-              label="Profesión"
-              v-model="dataCard.profession"
-              type="text"
-              clearable
-              :dense="dense"
-              lazy-rules
-              :rules="[
-                (val) =>
-                  (val && val.length > 0) ||
-                  'La Profesión no debe estar en blanco.',
-              ]"
-            />
-
-            <q-select
-              filled
-              :readonly="isRead"
-              v-model="dataCard.subjects"
-              multiple
-              :options="optionsSubjects"
-              use-chips
-              stack-label
-              label="Asignatura"
-              option-value="id"
-              option-label="name"
             />
           </q-card-section>
 
@@ -133,17 +101,16 @@
 import { useDialogPluginComponent, useQuasar } from 'quasar';
 import { onMounted, ref } from 'vue';
 
-import {
-  isReadOnly,
-  mappingObject,
-  validateEmail,
-} from 'src/helpers/customFunctions';
-import { Subject, Teacher, Paging, TeacherNew } from 'src/interfaces';
-import { useTeacher } from 'src/composables/useTeacher';
-import { getSubject } from 'src/helpers/get-subject';
+import { isReadOnly, mappingObject } from 'src/helpers/customFunctions';
+import { Classroom, ClassroomNew } from 'src/interfaces';
+import { useClassroom } from 'src/composables/useClassroom';
 
-const { getTeacherByID, teacherSave, teacherUpdate, getTeacherDelByID } =
-  useTeacher();
+const {
+  getClassroomByID,
+  classroomSave,
+  classroomUpdate,
+  getClassroomDelByID,
+} = useClassroom();
 
 const props = defineProps({
   modo: {
@@ -194,29 +161,14 @@ function confirm() {
     });
 }
 
-const cardX = <Teacher>{
+const cardX = <Classroom>{
   id: 0,
-  firstname: '',
-  lastname: '',
-  email: '',
-  profession: '',
-  subjects: [],
+  name: '',
 };
 
 const dataCard = ref(cardX);
-const optionsSubjects = ref<Subject[]>([]);
 
 onMounted(async () => {
-  const resp = await getSubject(<Paging>{
-    Page: 1,
-    PageSize: 99999999,
-    FieldOrder: 'Name',
-    IsAsc: true,
-  });
-  if (resp.isValid) {
-    optionsSubjects.value = resp.result.items;
-  }
-
   //
   isRead.value = await isReadOnly(props.modo);
   const d = {
@@ -226,9 +178,9 @@ onMounted(async () => {
     dataCard.value = d;
     modoLetrero.value = 'AGREGANDO';
   } else {
-    const resp = await getTeacherByID(props.registro.id);
+    const resp = await getClassroomByID(props.registro.id);
     if (resp.isValid) {
-      dataCard.value = <Teacher>mappingObject(d, resp.result);
+      dataCard.value = <Classroom>mappingObject(d, resp.result);
     } else dataCard.value = d;
 
     if (props.modo == 'EDIT') {
@@ -255,12 +207,12 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
 const callSave = async () => {
   // on OK, it is REQUIRED to
   // call onDialogOK (with optional payload)
-  const payload = <Teacher>JSON.parse(JSON.stringify(dataCard.value));
+  const payload = <Classroom>JSON.parse(JSON.stringify(dataCard.value));
   if (props.modo == 'NEW') {
     // delete payload.id;
     const save = convertRecord(payload);
 
-    const resp = await teacherSave(save);
+    const resp = await classroomSave(save);
     if (resp.isValid) {
       onDialogOK(resp.result);
     }
@@ -268,7 +220,7 @@ const callSave = async () => {
     const id = payload.id;
     const save = convertRecord(payload);
 
-    const resp = await teacherUpdate(id, save);
+    const resp = await classroomUpdate(id, save);
     if (resp.isValid) {
       onDialogOK(resp.result);
     }
@@ -277,15 +229,11 @@ const callSave = async () => {
   // ...and it will also hide the dialog automatically
 };
 
-const convertRecord = (payload: Teacher): TeacherNew => {
+const convertRecord = (payload: Classroom): ClassroomNew => {
   return {
-    firstName: payload.firstname,
-    lastName: payload.lastname,
-    email: payload.email,
-    profession: payload.profession,
-    detail: payload.subjects.map((x: Subject) => {
-      return x.id;
-    }),
+    name: payload.name,
+    capacity: payload.capacity,
+    location: payload.location,
   };
 };
 
@@ -293,14 +241,14 @@ const callDelete = async () => {
   console.log('Estoy en callDelete');
   let payload = JSON.parse(JSON.stringify(dataCard.value));
   console.log(payload);
-  const resp = await getTeacherDelByID(payload.id);
+  const resp = await getClassroomDelByID(payload.id);
   if (resp.isValid) {
     onDialogOK(resp.result);
   }
 };
 
 const onOKClick = () => {
-  myForm.value.validate().then((success: Teacher) => {
+  myForm.value.validate().then((success: Classroom) => {
     if (success) {
       console.info('success');
       callSave();

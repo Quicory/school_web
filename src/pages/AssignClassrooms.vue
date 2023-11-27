@@ -1,10 +1,10 @@
 <template>
   <div class="q-pa-md">
-    <div class="q-table__title q-ml-md">Maestros</div>
+    <div class="q-table__title q-ml-md">Asignación de Aulas</div>
     <q-table
       flat
       bordered
-      title="Maestros"
+      title="Asignación de Aulas"
       :rows-per-page-options="[5, 10, 20, 30, 0]"
       v-model:pagination="pagination"
       :rows="rows"
@@ -20,7 +20,7 @@
           color="primary"
           :disable="loading"
           label="Agregar"
-          @click="showDialog('NEW', <Teacher>{})"
+          @click="showDialog('NEW', <AssignClassroom>{})"
         >
           <q-tooltip> Utilizado para agregar un registro </q-tooltip>
         </q-btn>
@@ -96,15 +96,15 @@ import { QTableColumn, QTableProps, useQuasar, date } from 'quasar';
 import { Notify } from 'quasar';
 import { ref, onMounted } from 'vue';
 
-import { Teacher, Paging } from 'src/interfaces';
-import { useTeacher } from 'src/composables/useTeacher';
+import { AssignClassroom, Paging } from 'src/interfaces';
+import { useAssignClassroom } from 'src/composables/useAssignClassroom';
 import { userStore } from 'src/stores/userStore';
-import TeacherCard from 'src/components/TeacherCard.vue';
+import AssignClassroomCard from 'src/components/AssignClassroomCard.vue';
 
 const $q = useQuasar();
 const { getIsAdmin } = userStore();
 
-const { getTeacher } = useTeacher();
+const { getAssignClassroom } = useAssignClassroom();
 
 const columns = ref<QTableColumn[]>([
   {
@@ -166,7 +166,7 @@ const columns = ref<QTableColumn[]>([
 const loading = ref(false);
 const filter = ref('');
 // const rowCount = ref(10);
-const rows = ref<Teacher[]>([]);
+const rows = ref<AssignClassroom[]>([]);
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
@@ -174,11 +174,10 @@ const pagination = ref({
   rowsPerPage: 10,
   rowsNumber: 0,
 });
-const confirm = ref(false);
 
-const showDialog = (modo: string, data: Teacher) => {
+const showDialog = (modo: string, data: AssignClassroom) => {
   $q.dialog({
-    component: TeacherCard,
+    component: AssignClassroomCard,
     // props forwarded to your custom component
     componentProps: {
       modo: modo,
@@ -186,7 +185,7 @@ const showDialog = (modo: string, data: Teacher) => {
     },
     persistent: true,
   })
-    .onOk((/* data: Teacher */) => {
+    .onOk((/* data: AssignClassroom */) => {
       console.info('OK');
       callServer();
     })
@@ -216,7 +215,7 @@ async function fetchFromServer(
 ) {
   loading.value = true;
 
-  const resp = await getTeacher(<Paging>{
+  const resp = await getAssignClassroom(<Paging>{
     Page: startRow,
     PageSize: count,
     FieldOrder: sortBy,

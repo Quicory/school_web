@@ -1,10 +1,10 @@
 <template>
   <div class="q-pa-md">
-    <div class="q-table__title q-ml-md">Maestros</div>
+    <div class="q-table__title q-ml-md">Estudiantes</div>
     <q-table
       flat
       bordered
-      title="Maestros"
+      title="Estudiantes"
       :rows-per-page-options="[5, 10, 20, 30, 0]"
       v-model:pagination="pagination"
       :rows="rows"
@@ -20,7 +20,7 @@
           color="primary"
           :disable="loading"
           label="Agregar"
-          @click="showDialog('NEW', <Teacher>{})"
+          @click="showDialog('NEW', <Student>{})"
         >
           <q-tooltip> Utilizado para agregar un registro </q-tooltip>
         </q-btn>
@@ -96,15 +96,15 @@ import { QTableColumn, QTableProps, useQuasar, date } from 'quasar';
 import { Notify } from 'quasar';
 import { ref, onMounted } from 'vue';
 
-import { Teacher, Paging } from 'src/interfaces';
-import { useTeacher } from 'src/composables/useTeacher';
+import { Student, Paging } from 'src/interfaces';
+import { useStudent } from 'src/composables/useStudent';
 import { userStore } from 'src/stores/userStore';
-import TeacherCard from 'src/components/TeacherCard.vue';
+import StudentCard from 'src/components/StudentCard.vue';
 
 const $q = useQuasar();
 const { getIsAdmin } = userStore();
 
-const { getTeacher } = useTeacher();
+const { getStudent } = useStudent();
 
 const columns = ref<QTableColumn[]>([
   {
@@ -126,17 +126,49 @@ const columns = ref<QTableColumn[]>([
     sortable: true,
   },
   {
-    name: 'email',
-    label: 'Correo',
+    name: 'birthdate',
+    required: true,
+    label: 'Fecha Nacimiento',
     align: 'left',
-    field: 'email',
+    field: (row) => row.birthdate,
+    format: (val) => date.formatDate(val, 'DD-MM-YYYY'),
     sortable: true,
   },
   {
-    name: 'profession',
-    label: 'Profesión',
+    name: 'idnumber',
+    required: true,
+    label: 'Matrícula',
     align: 'left',
-    field: 'profession',
+    field: (row) => row.idnumber,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: 'fathername',
+    required: true,
+    label: 'Nombre Padre',
+    align: 'left',
+    field: (row) => row.fathername,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: 'mothername',
+    required: true,
+    label: 'Nombre Madre',
+    align: 'left',
+    field: (row) => row.mothername,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: 'address',
+    required: true,
+    label: 'Dirección',
+    align: 'left',
+    field: (row) => row.address,
+    format: (val) => `${val}`,
+    sortable: true,
   },
   {
     name: 'create_at',
@@ -166,7 +198,7 @@ const columns = ref<QTableColumn[]>([
 const loading = ref(false);
 const filter = ref('');
 // const rowCount = ref(10);
-const rows = ref<Teacher[]>([]);
+const rows = ref<Student[]>([]);
 const pagination = ref({
   sortBy: 'desc',
   descending: false,
@@ -174,11 +206,10 @@ const pagination = ref({
   rowsPerPage: 10,
   rowsNumber: 0,
 });
-const confirm = ref(false);
 
-const showDialog = (modo: string, data: Teacher) => {
+const showDialog = (modo: string, data: Student) => {
   $q.dialog({
-    component: TeacherCard,
+    component: StudentCard,
     // props forwarded to your custom component
     componentProps: {
       modo: modo,
@@ -186,7 +217,7 @@ const showDialog = (modo: string, data: Teacher) => {
     },
     persistent: true,
   })
-    .onOk((/* data: Teacher */) => {
+    .onOk((/* data: Student */) => {
       console.info('OK');
       callServer();
     })
@@ -216,7 +247,7 @@ async function fetchFromServer(
 ) {
   loading.value = true;
 
-  const resp = await getTeacher(<Paging>{
+  const resp = await getStudent(<Paging>{
     Page: startRow,
     PageSize: count,
     FieldOrder: sortBy,

@@ -21,14 +21,14 @@
               />
             </div>
             <div class="col-10.5 col-md-12 text-h6">
-              Maestros ({{ modoLetrero }})
+              Asignación de Aulas ({{ modoLetrero }})
             </div>
           </q-card-section>
 
           <q-card-section style="padding-bottom: 0 !important">
             <q-input
               filled
-              :readonly="isRead"
+              readonly
               label="Nombre"
               v-model="dataCard.firstname"
               type="text"
@@ -44,7 +44,7 @@
 
             <q-input
               filled
-              :readonly="isRead"
+              readonly
               label="Apellido"
               v-model="dataCard.lastname"
               type="text"
@@ -60,7 +60,7 @@
 
             <q-input
               filled
-              :readonly="isRead"
+              readonly
               label="Correo"
               v-model="dataCard.email"
               type="email"
@@ -79,7 +79,7 @@
 
             <q-input
               filled
-              :readonly="isRead"
+              readonly
               label="Profesión"
               v-model="dataCard.profession"
               type="text"
@@ -96,9 +96,9 @@
             <q-select
               filled
               :readonly="isRead"
-              v-model="dataCard.subjects"
+              v-model="dataCard.classrooms"
               multiple
-              :options="optionsSubjects"
+              :options="optionsClassrooms"
               use-chips
               stack-label
               label="Asignatura"
@@ -138,12 +138,21 @@ import {
   mappingObject,
   validateEmail,
 } from 'src/helpers/customFunctions';
-import { Subject, Teacher, Paging, TeacherNew } from 'src/interfaces';
-import { useTeacher } from 'src/composables/useTeacher';
-import { getSubject } from 'src/helpers/get-subject';
+import {
+  Classroom,
+  AssignClassroom,
+  Paging,
+  AssignClassroomNew,
+} from 'src/interfaces';
+import { useAssignClassroom } from 'src/composables/useAssignClassroom';
+import { getClassroom } from 'src/helpers/get-classroom';
 
-const { getTeacherByID, teacherSave, teacherUpdate, getTeacherDelByID } =
-  useTeacher();
+const {
+  getAssignClassroomByID,
+  assignClassroomSave,
+  assignClassroomUpdate,
+  getAssignClassroomDelByID,
+} = useAssignClassroom();
 
 const props = defineProps({
   modo: {
@@ -194,27 +203,27 @@ function confirm() {
     });
 }
 
-const cardX = <Teacher>{
+const cardX = <AssignClassroom>{
   id: 0,
   firstname: '',
   lastname: '',
   email: '',
   profession: '',
-  subjects: [],
+  classrooms: [],
 };
 
 const dataCard = ref(cardX);
-const optionsSubjects = ref<Subject[]>([]);
+const optionsClassrooms = ref<Classroom[]>([]);
 
 onMounted(async () => {
-  const resp = await getSubject(<Paging>{
+  const resp = await getClassroom(<Paging>{
     Page: 1,
     PageSize: 99999999,
     FieldOrder: 'Name',
     IsAsc: true,
   });
   if (resp.isValid) {
-    optionsSubjects.value = resp.result.items;
+    optionsClassrooms.value = resp.result.items;
   }
 
   //
@@ -226,9 +235,9 @@ onMounted(async () => {
     dataCard.value = d;
     modoLetrero.value = 'AGREGANDO';
   } else {
-    const resp = await getTeacherByID(props.registro.id);
+    const resp = await getAssignClassroomByID(props.registro.id);
     if (resp.isValid) {
-      dataCard.value = <Teacher>mappingObject(d, resp.result);
+      dataCard.value = <AssignClassroom>mappingObject(d, resp.result);
     } else dataCard.value = d;
 
     if (props.modo == 'EDIT') {
@@ -255,12 +264,12 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
 const callSave = async () => {
   // on OK, it is REQUIRED to
   // call onDialogOK (with optional payload)
-  const payload = <Teacher>JSON.parse(JSON.stringify(dataCard.value));
+  const payload = <AssignClassroom>JSON.parse(JSON.stringify(dataCard.value));
   if (props.modo == 'NEW') {
     // delete payload.id;
     const save = convertRecord(payload);
 
-    const resp = await teacherSave(save);
+    const resp = await assignClassroomSave(save);
     if (resp.isValid) {
       onDialogOK(resp.result);
     }
@@ -268,7 +277,7 @@ const callSave = async () => {
     const id = payload.id;
     const save = convertRecord(payload);
 
-    const resp = await teacherUpdate(id, save);
+    const resp = await assignClassroomUpdate(id, save);
     if (resp.isValid) {
       onDialogOK(resp.result);
     }
@@ -277,13 +286,13 @@ const callSave = async () => {
   // ...and it will also hide the dialog automatically
 };
 
-const convertRecord = (payload: Teacher): TeacherNew => {
+const convertRecord = (payload: AssignClassroom): AssignClassroomNew => {
   return {
     firstName: payload.firstname,
     lastName: payload.lastname,
     email: payload.email,
     profession: payload.profession,
-    detail: payload.subjects.map((x: Subject) => {
+    detail: payload.classrooms.map((x: Classroom) => {
       return x.id;
     }),
   };
@@ -293,14 +302,14 @@ const callDelete = async () => {
   console.log('Estoy en callDelete');
   let payload = JSON.parse(JSON.stringify(dataCard.value));
   console.log(payload);
-  const resp = await getTeacherDelByID(payload.id);
+  const resp = await getAssignClassroomDelByID(payload.id);
   if (resp.isValid) {
     onDialogOK(resp.result);
   }
 };
 
 const onOKClick = () => {
-  myForm.value.validate().then((success: Teacher) => {
+  myForm.value.validate().then((success: AssignClassroom) => {
     if (success) {
       console.info('success');
       callSave();

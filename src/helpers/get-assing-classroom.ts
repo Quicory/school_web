@@ -1,13 +1,15 @@
 import { api } from 'src/boot/axios';
 import {
-  TeacherResponse,
+  AssignClassroomResponse,
   Paging,
-  TeacherResponseOne,
-  TeacherNew,
+  AssignClassroomResponseOne,
+  AssignClassroomNew,
 } from 'src/interfaces';
 import { LocalStorage } from 'quasar';
 
-export const getTeacher = async (paging: Paging): Promise<TeacherResponse> => {
+export const getAssignClassroom = async (
+  paging: Paging
+): Promise<AssignClassroomResponse> => {
   const token = LocalStorage.getItem('token');
   api.defaults.headers.common = { Authorization: `bearer ${token}` };
 
@@ -21,12 +23,14 @@ export const getTeacher = async (paging: Paging): Promise<TeacherResponse> => {
   }
 
   try {
-    const { data } = await api.get<TeacherResponse>('/api/Teacher' + query);
+    const { data } = await api.get<AssignClassroomResponse>(
+      '/api/AssignClassroom' + query
+    );
     console.log('Teachear', data);
     return data;
   } catch (error) {
     console.error(error);
-    return <TeacherResponse>{
+    return <AssignClassroomResponse>{
       isValid: false,
       message: 'Error buscando datos...',
       errorMessages: error,
@@ -34,80 +38,86 @@ export const getTeacher = async (paging: Paging): Promise<TeacherResponse> => {
   }
 };
 
-export const getTeacherID = async (id: number): Promise<TeacherResponseOne> => {
-  const token = LocalStorage.getItem('token');
-  api.defaults.headers.common = { Authorization: `bearer ${token}` };
-
-  try {
-    const { data } = await api.get<TeacherResponseOne>(`/api/Teacher/${id}`);
-    return data;
-  } catch (error) {
-    console.error(error);
-    return <TeacherResponseOne>{
-      isValid: false,
-      message: 'Error buscando datos...',
-      errorMessages: error,
-    };
-  }
-};
-
-export const getTeacherNew = async (
-  teacher: TeacherNew
-): Promise<TeacherResponseOne> => {
-  const token = LocalStorage.getItem('token');
-  api.defaults.headers.common = { Authorization: `bearer ${token}` };
-
-  try {
-    const { data } = await api.post<TeacherResponseOne>(
-      '/api/Teacher',
-      teacher
-    );
-    return data;
-  } catch (error) {
-    console.error(error);
-    return <TeacherResponseOne>{
-      isValid: false,
-      message: 'Error buscando datos...',
-      errorMessages: error,
-    };
-  }
-};
-
-export const getTeacherEdit = async (
-  id: number,
-  teacher: TeacherNew
-): Promise<TeacherResponseOne> => {
-  const token = LocalStorage.getItem('token');
-  api.defaults.headers.common = { Authorization: `bearer ${token}` };
-
-  try {
-    const { data } = await api.put<TeacherResponseOne>(
-      `/api/Teacher/${id}`,
-      teacher
-    );
-    return data;
-  } catch (error) {
-    console.error(error);
-    return <TeacherResponseOne>{
-      isValid: false,
-      message: 'Error buscando datos...',
-      errorMessages: error,
-    };
-  }
-};
-
-export const getTeacherDelete = async (
+export const getAssignClassroomID = async (
   id: number
-): Promise<TeacherResponseOne> => {
+): Promise<AssignClassroomResponseOne> => {
   const token = LocalStorage.getItem('token');
   api.defaults.headers.common = { Authorization: `bearer ${token}` };
 
   try {
-    const { data } = await api.delete<TeacherResponseOne>(`/api/Teacher/${id}`);
+    const { data } = await api.get<AssignClassroomResponseOne>(
+      `/api/AssignClassroom/${id}`
+    );
     return data;
   } catch (error) {
     console.error(error);
-    return <TeacherResponseOne>{
+    return <AssignClassroomResponseOne>{
+      isValid: false,
+      message: 'Error buscando datos...',
+      errorMessages: error,
+    };
+  }
+};
+
+export const getAssignClassroomNew = async (
+  teacher: AssignClassroomNew
+): Promise<AssignClassroomResponseOne> => {
+  const token = LocalStorage.getItem('token');
+  api.defaults.headers.common = { Authorization: `bearer ${token}` };
+
+  try {
+    const { data } = await api.post<AssignClassroomResponseOne>(
+      '/api/AssignClassroom',
+      teacher
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return <AssignClassroomResponseOne>{
+      isValid: false,
+      message: 'Error buscando datos...',
+      errorMessages: error,
+    };
+  }
+};
+
+export const getAssignClassroomEdit = async (
+  id: number,
+  teacher: AssignClassroomNew
+): Promise<AssignClassroomResponseOne> => {
+  const token = LocalStorage.getItem('token');
+  api.defaults.headers.common = { Authorization: `bearer ${token}` };
+
+  try {
+    const { data } = await api.put<AssignClassroomResponseOne>(
+      `/api/AssignClassroom/${id}`,
+      teacher
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return <AssignClassroomResponseOne>{
+      isValid: false,
+      message: 'Error buscando datos...',
+      errorMessages: error,
+    };
+  }
+};
+
+export const getAssignClassroomDelete = async (
+  id: number
+): Promise<AssignClassroomResponseOne> => {
+  const token = LocalStorage.getItem('token');
+  api.defaults.headers.common = { Authorization: `bearer ${token}` };
+
+  try {
+    const { data } = await api.delete<AssignClassroomResponseOne>(
+      `/api/AssignClassroom/${id}`
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return <AssignClassroomResponseOne>{
       isValid: false,
       message: 'Error buscando datos...',
       errorMessages: error,
