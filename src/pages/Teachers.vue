@@ -1,5 +1,6 @@
 <template>
   <div class="q-pa-md">
+    <div class="q-table__title q-ml-md">Maestros</div>
     <q-table
       flat
       bordered
@@ -19,8 +20,10 @@
           color="primary"
           :disable="loading"
           label="Agregar"
-          @click="addRow"
-        />
+          @click="showDialog('NEW', <Teacher>{})"
+        >
+          <q-tooltip> Utilizado para agregar un registro </q-tooltip>
+        </q-btn>
 
         <q-space />
         <q-input
@@ -61,155 +64,63 @@
                   dense
                   round
                   flat
-                  color="grey"
-                  @click="onEdit(props.row)"
+                  color="blue"
+                  @click="showDialog('EDIT', props.row)"
                   icon="edit"
-                ></q-btn>
+                  class="q-mr-sm"
+                  v-if="getIsAdmin"
+                >
+                  <q-tooltip> Utilizado para editar el registro </q-tooltip>
+                </q-btn>
                 <q-btn
                   dense
                   round
                   flat
-                  color="grey"
-                  @click="onDelete(props.row)"
+                  color="red"
+                  @click="showDialog('DELETE', props.row)"
                   icon="delete"
-                ></q-btn>
+                >
+                  <q-tooltip> Utilizado para eliminar el registro </q-tooltip>
+                </q-btn>
               </div>
             </template>
           </q-td>
         </q-tr>
       </template>
-
-      <!-- <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td key="firstname" :props="props">
-            {{ props.row.firstname }}
-          </q-td>
-          <q-td key="lastname" :props="props">
-            {{ props.row.lastname }}
-          </q-td>
-          <q-td key="email" :props="props">
-            {{ props.row.email }}
-          </q-td>
-          <q-td key="profession" :props="props">
-            {{ props.row.profession }}
-          </q-td>
-          <q-td key="id" :props="props">
-            <q-btn
-              dense
-              round
-              flat
-              color="grey"
-              @click="onEdit(props.row)"
-              icon="edit"
-            ></q-btn>
-            <q-btn
-              dense
-              round
-              flat
-              color="grey"
-              @click="onDelete(props.row)"
-              icon="delete"
-            ></q-btn>
-          </q-td>
-        </q-tr>
-      </template> -->
-
-      <!-- <template v-slot:body-cell-actions="props">
-        <q-td :props="props">
-          <q-btn
-            dense
-            round
-            flat
-            color="grey"
-            @click="onEdit(props.row)"
-            icon="edit"
-          ></q-btn>
-          <q-btn
-            dense
-            round
-            flat
-            color="grey"
-            @click="onDelete(props.row)"
-            icon="delete"
-          ></q-btn>
-        </q-td>
-      </template> -->
-
-      <!-- <template v-slot:body-cell-actions="props">
-        <q-td :props="props">
-          <q-btn icon="mode_edit" @click="onEdit(props.row)"></q-btn>
-          <q-btn icon="delete" @click="onDelete(props.row)"></q-btn>
-        </q-td>
-      </template> -->
-
-      <!-- <template v-slot:body-cell-your_button_column_name="props">
-        <q-td :props="props">
-          <q-btn
-            round
-            unelevated
-            color="red"
-            @click="onDelete(props.row.id)"
-            label="Your Button Label"
-          ></q-btn>
-        </q-td>
-      </template> -->
-
-      <!-- <template v-slot:body-cell-name="props">
-        <q-td :props="props">
-          <div>
-            <q-btn
-              color="purple"
-              :label="props.value"
-              @click="onEdit(props.row)"
-            ></q-btn>
-          </div>
-          <div class="my-table-details">
-            {{ props.row.name }}
-          </div>
-        </q-td>
-      </template> -->
-
-      <!-- <template v-slot:body-cell-actions="props">
-        <q-td :props="props">
-          <q-btn
-            class="action-btn"
-            color="green"
-            icon="mdi-pen"
-            @click="onEdit(props.row)"
-          />
-        </q-td>
-      </template> -->
-
-      <!-- <template v-slot:body-cell-name="props">
-        <q-td :props="props">
-          <q-btn
-            dense
-            round
-            flat
-            color="grey"
-            @click="onEdit(props.row)"
-            icon="edit"
-          ></q-btn>
-          <q-btn
-            dense
-            round
-            flat
-            color="grey"
-            @click="onDelete(props.row)"
-            icon="delete"
-          ></q-btn>
-        </q-td>
-      </template> -->
     </q-table>
+
+    <!-- Delete record -->
+    <q-dialog v-model="confirm" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="delete" color="negative" text-color="white" />
+          <span class="q-ml-sm"
+            >Esta seguro que quiere <span style="color: red">ELIMNAR</span> este
+            registro</span
+          >
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancelar" color="primary" v-close-popup />
+          <q-btn label="Aceptar" color="negative" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { QTableColumn, QTableProps } from 'quasar';
+import { QTableColumn, QTableProps, useQuasar } from 'quasar';
 import { Notify } from 'quasar';
-import { Teacher, Paging } from 'src/interfaces';
 import { ref, onMounted } from 'vue';
+
+import { Teacher, Paging } from 'src/interfaces';
 import { useTeacher } from 'src/composables/useTeacher';
+import { userStore } from 'src/stores/userStore';
+import TeacherCard from 'src/components/TeacherCard.vue';
+
+const $q = useQuasar();
+const { getIsAdmin } = userStore();
 
 const { getTeacher } = useTeacher();
 
@@ -263,12 +174,38 @@ const pagination = ref({
   rowsPerPage: 10,
   rowsNumber: 0,
 });
+const confirm = ref(false);
+
+const showDialog = (modo: string, data: Teacher) => {
+  $q.dialog({
+    component: TeacherCard,
+    // props forwarded to your custom component
+    componentProps: {
+      modo: modo,
+      registro: data,
+    },
+    persistent: true,
+  })
+    .onOk((/* data: Teacher */) => {
+      console.info('OK');
+      callServer();
+    })
+    .onCancel(() => {
+      console.info('Cancel');
+    })
+    .onDismiss(() => {
+      console.info('Called on OK or Cancel');
+    });
+};
 
 onMounted(async () => {
-  console.log('onMounted');
-  const { page, rowsPerPage, sortBy, descending } = pagination.value;
-  await fetchFromServer(page, rowsPerPage, '', sortBy, descending);
+  await callServer();
 });
+
+const callServer = async () => {
+  const { page, rowsPerPage, sortBy, descending } = pagination.value;
+  await fetchFromServer(page, rowsPerPage, filter.value, sortBy, descending);
+};
 
 async function fetchFromServer(
   startRow: number,
@@ -297,28 +234,6 @@ async function fetchFromServer(
       message: resp.message,
     });
   }
-  // PageSize: rowCount.value,
-  // FieldOrder: string;
-  // IsAsc: boolean,
-  // Filter?: string;  })
-  // loading.value = false
-  // const data = filter
-  //       ? originalRows.filter(row => row.name.includes(filter))
-  //       : originalRows.slice()
-  //     // handle sortBy
-  //     if (sortBy) {
-  //       const sortFn = sortBy === 'desc'
-  //         ? (descending
-  //             ? (a, b) => (a.name > b.name ? -1 : a.name < b.name ? 1 : 0)
-  //             : (a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0)
-  //           )
-  //         : (descending
-  //             ? (a, b) => (parseFloat(b[ sortBy ]) - parseFloat(a[ sortBy ]))
-  //             : (a, b) => (parseFloat(a[ sortBy ]) - parseFloat(b[ sortBy ]))
-  //           )
-  //       data.sort(sortFn)
-  //     }
-  //     return data.slice(startRow, startRow + count)
 }
 
 async function onRequest(
@@ -334,41 +249,6 @@ async function onRequest(
   pagination.value.rowsPerPage = rowsPerPage;
   pagination.value.sortBy = sortBy;
   pagination.value.descending = descending;
-}
-
-function addRow() {
-  // loading.value = true;
-  // setTimeout(() => {
-  //   const index = Math.floor(Math.random() * (rows.value.length + 1)),
-  //     row = originalRows[Math.floor(Math.random() * originalRows.value.length)];
-  //   if (rows.value.length === 0) {
-  //     rowCount.value = 0;
-  //   }
-  //   row.id = ++rowCount.value;
-  //   const newRow = { ...row }; // extend({}, row, { name: `${row.name} (${row.__count})` })
-  //   rows.value = [
-  //     ...rows.value.slice(0, index),
-  //     newRow,
-  //     ...rows.value.slice(index),
-  //   ];
-  //   loading.value = false;
-  // }, 500);
-}
-function onEdit(row: object) {
-  console.log(row);
-}
-
-function onDelete(row: object) {
-  console.log(row);
-  // loading.value = true;
-  // setTimeout(() => {
-  //   const index = Math.floor(Math.random() * rows.value.length);
-  //   rows.value = [
-  //     ...rows.value.slice(0, index),
-  //     ...rows.value.slice(index + 1),
-  //   ];
-  //   loading.value = false;
-  // }, 500);
 }
 </script>
 

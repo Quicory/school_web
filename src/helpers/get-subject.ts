@@ -1,13 +1,13 @@
 import { api } from 'src/boot/axios';
 import {
-  TeacherResponse,
+  SubjectResponse,
   Paging,
-  TeacherResponseOne,
-  TeacherNew,
+  SubjectResponseOne,
+  SubjectNew,
 } from 'src/interfaces';
 import { LocalStorage } from 'quasar';
 
-export const getTeacher = async (paging: Paging): Promise<TeacherResponse> => {
+export const getSubject = async (paging: Paging): Promise<SubjectResponse> => {
   const token = LocalStorage.getItem('token');
   api.defaults.headers.common = { Authorization: `bearer ${token}` };
 
@@ -21,11 +21,11 @@ export const getTeacher = async (paging: Paging): Promise<TeacherResponse> => {
   }
 
   try {
-    const { data } = await api.get<TeacherResponse>('/api/Teacher' + query);
+    const { data } = await api.get<SubjectResponse>('/api/Subject' + query);
     return data;
   } catch (error) {
     console.error(error);
-    return <TeacherResponse>{
+    return <SubjectResponse>{
       isValid: false,
       message: 'Error buscando datos...',
       errorMessages: error,
@@ -33,16 +33,16 @@ export const getTeacher = async (paging: Paging): Promise<TeacherResponse> => {
   }
 };
 
-export const getTeacherID = async (id: number): Promise<TeacherResponseOne> => {
+export const getSubjectID = async (id: number): Promise<SubjectResponseOne> => {
   const token = LocalStorage.getItem('token');
   api.defaults.headers.common = { Authorization: `bearer ${token}` };
 
   try {
-    const { data } = await api.get<TeacherResponseOne>(`/api/Teacher/${id}`);
+    const { data } = await api.get<SubjectResponseOne>(`/api/Subject/${id}`);
     return data;
   } catch (error) {
     console.error(error);
-    return <TeacherResponseOne>{
+    return <SubjectResponseOne>{
       isValid: false,
       message: 'Error buscando datos...',
       errorMessages: error,
@@ -50,21 +50,21 @@ export const getTeacherID = async (id: number): Promise<TeacherResponseOne> => {
   }
 };
 
-export const getTeacherNew = async (
-  teacher: TeacherNew
-): Promise<TeacherResponseOne> => {
+export const getSubjectNew = async (
+  Subject: SubjectNew
+): Promise<SubjectResponseOne> => {
   const token = LocalStorage.getItem('token');
   api.defaults.headers.common = { Authorization: `bearer ${token}` };
 
   try {
-    const { data } = await api.post<TeacherResponseOne>(
-      '/api/Teacher',
-      teacher
+    const { data } = await api.post<SubjectResponseOne>(
+      '/api/Subject',
+      Subject
     );
     return data;
   } catch (error) {
     console.error(error);
-    return <TeacherResponseOne>{
+    return <SubjectResponseOne>{
       isValid: false,
       message: 'Error buscando datos...',
       errorMessages: error,
@@ -72,22 +72,22 @@ export const getTeacherNew = async (
   }
 };
 
-export const getTeacherEdit = async (
+export const getSubjectEdit = async (
   id: number,
-  teacher: TeacherNew
-): Promise<TeacherResponseOne> => {
+  Subject: SubjectNew
+): Promise<SubjectResponseOne> => {
   const token = LocalStorage.getItem('token');
   api.defaults.headers.common = { Authorization: `bearer ${token}` };
 
   try {
-    const { data } = await api.put<TeacherResponseOne>(
-      `/api/Teacher/${id}`,
-      teacher
+    const { data } = await api.put<SubjectResponseOne>(
+      `/api/Subject/${id}`,
+      Subject
     );
     return data;
   } catch (error) {
     console.error(error);
-    return <TeacherResponseOne>{
+    return <SubjectResponseOne>{
       isValid: false,
       message: 'Error buscando datos...',
       errorMessages: error,
@@ -95,18 +95,18 @@ export const getTeacherEdit = async (
   }
 };
 
-export const getTeacherDelete = async (
+export const getSubjectDelete = async (
   id: number
-): Promise<TeacherResponseOne> => {
+): Promise<SubjectResponseOne> => {
   const token = LocalStorage.getItem('token');
   api.defaults.headers.common = { Authorization: `bearer ${token}` };
 
   try {
-    const { data } = await api.delete<TeacherResponseOne>(`/api/Teacher/${id}`);
+    const { data } = await api.delete<SubjectResponseOne>(`/api/Subject/${id}`);
     return data;
   } catch (error) {
     console.error(error);
-    return <TeacherResponseOne>{
+    return <SubjectResponseOne>{
       isValid: false,
       message: 'Error buscando datos...',
       errorMessages: error,

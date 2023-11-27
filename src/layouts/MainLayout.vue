@@ -129,6 +129,21 @@
           </q-toolbar-title>
 
           <div>{{ user.username }} ({{ user.completename }})</div>
+          <q-btn
+            flat
+            @click="
+              () => {
+                getOut;
+                $router.push({ name: 'Login' });
+              }
+            "
+            round
+            dense
+            icon="fa-solid fa-right-from-bracket"
+            class="q-ml-md"
+          >
+            <q-tooltip> Salir del Sistema </q-tooltip>
+          </q-btn>
         </q-toolbar>
       </q-header>
 
@@ -175,7 +190,7 @@
 import { ref } from 'vue';
 import { userStore } from 'src/stores/userStore';
 
-const { user } = userStore();
+const { user, getOut } = userStore();
 
 const leftDrawerOpen = ref(false);
 
@@ -223,8 +238,4 @@ const menuList = [
     separator: true,
   },
 ];
-
-// function toggleLeftDrawer() {
-//   leftDrawerOpen.value = !leftDrawerOpen.value;
-// }
 </script>
