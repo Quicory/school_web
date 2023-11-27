@@ -1,3 +1,4 @@
+import { getChangePassword } from './../helpers/get-login';
 // import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 
@@ -23,7 +24,27 @@ export const useAuth = () => {
     return rep;
   };
 
+  const ChangePassword = async (
+    username: string,
+    password: string,
+    passwordNew: string
+  ) => {
+    $q.loading.show({
+      delay: 400, // ms
+      message: 'Accesando...',
+      html: true,
+    });
+
+    const rep = await getChangePassword(username, password, passwordNew);
+    // Response.value = rep;
+
+    $q.loading.hide();
+
+    return rep;
+  };
+
   return {
     Login,
+    ChangePassword,
   };
 };

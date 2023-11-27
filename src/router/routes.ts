@@ -44,6 +44,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Asignación de Aulas', requiresAuth: true },
       },
       {
+        path: 'ChangePassword',
+        name: 'ChangePassword',
+        component: () => import('pages/ChangePassword.vue'),
+        meta: { title: 'Usuarios', requiresAuth: true },
+      },
+      {
         path: 'Users',
         name: 'Users',
         component: () => import('pages/Users.vue'),

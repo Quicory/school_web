@@ -57,7 +57,7 @@
             v-for="{ name, value } in props.cols"
             :key="name"
           >
-            <template v-if="name.toLower() != 'id'">{{ value }}</template>
+            <template v-if="name != 'id'">{{ value }}</template>
             <template v-else>
               <div>
                 <q-btn
@@ -125,11 +125,11 @@ const columns = ref<QTableColumn[]>([
     sortable: true,
   },
   {
-    name: 'RolName',
+    name: 'Role',
     required: true,
     label: 'Rol',
     align: 'left',
-    field: (row) => row.RolName,
+    field: (row) => row.Role,
     format: (val) => `${val}`,
     sortable: true,
   },

@@ -1,7 +1,7 @@
 export interface UserEdit {
-  id: string;
-  username: string;
-  completeName: string;
-  email: string;
-  role: string;
+  Id: string;
+  UserName: string;
+  CompleteName: string;
+  Email: string;
+  Role: string;
 }

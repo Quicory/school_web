@@ -4,5 +4,5 @@ export interface UserComplete {
   userName: string;
   password: string;
   email: string;
-  RolName: string;
+  Role: string;
 }

@@ -190,7 +190,7 @@
 import { ref } from 'vue';
 import { userStore } from 'src/stores/userStore';
 
-const { user, getOut } = userStore();
+const { user, getOut, getIsAdmin } = userStore();
 
 const leftDrawerOpen = ref(false);
 
@@ -228,14 +228,18 @@ const menuList = [
   {
     icon: 'fa-solid fa-unlock-keyhole',
     label: 'Cambiar Clave',
-    name: 'Change',
+    name: 'ChangePassword',
     separator: true,
   },
-  {
+];
+
+// Allow edit user if is Admin
+if (getIsAdmin) {
+  menuList.push({
     icon: 'fa-solid fa-user-check',
     label: 'Usuarios',
     name: 'Users',
     separator: true,
-  },
-];
+  });
+}
 </script>

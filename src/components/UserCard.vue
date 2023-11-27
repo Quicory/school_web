@@ -50,7 +50,24 @@
                   (val && val.length > 0) ||
                   'La Contraseña no deber estar en blanco.',
               ]"
-              v-if="props.modo != 'NEW'"
+              v-if="props.modo == 'NEW'"
+            />
+
+            <q-input
+              filled
+              type="password"
+              v-model="ConfirmPassword"
+              label="Confirmar Contraseña"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'La Confirmación de Contraseña no deber estar en blanco.',
+                (val) =>
+                  (val && val == dataCard.password) ||
+                  'La Confirmación es diferente a la contraseña.',
+              ]"
+              v-if="props.modo == 'NEW'"
             />
 
             <q-input
@@ -94,7 +111,7 @@
               label="Rol"
               transition-show="flip-up"
               transition-hide="flip-down"
-              v-model="dataCard.RolName"
+              v-model="dataCard.Role"
               :options="['User', 'Admin']"
               lazy-rules
               :rules="[
@@ -163,31 +180,8 @@ const $q = useQuasar();
 
 const myForm = ref();
 const modoLetrero = ref('');
-
-// function confirm() {
-//   $q.dialog({
-//     dark: true,
-//     title: 'Confirmar',
-//     message: '¿Esta seguro que desea eliminar el registro?',
-//     cancel: true,
-//     persistent: true,
-//     position: 'bottom',
-//   })
-//     .onOk(() => {
-//       console.info('>>>> OK');
-//       callDelete();
-//     })
-//     .onOk(() => {
-//       // console.info('>>>> second OK catcher')
-//     })
-//     .onCancel(() => {
-//       console.info('>>>> Cancel');
-//       onDialogCancel();
-//     })
-//     .onDismiss(() => {
-//       // console.info('I am triggered on both OK and Cancel')
-//     });
-// }
+const ConfirmPassword = ref('');
+const ID = ref('');
 
 const cardX = <UserComplete>{
   Id: '',
@@ -195,7 +189,7 @@ const cardX = <UserComplete>{
   userName: '',
   password: '',
   email: '',
-  RolName: '',
+  Role: '',
 };
 
 const dataCard = ref(cardX);
@@ -210,7 +204,8 @@ onMounted(async () => {
     dataCard.value = d;
     modoLetrero.value = 'AGREGANDO';
   } else {
-    const resp = await getUserByID(props.registro.Id);
+    ID.value = props.registro.id;
+    const resp = await getUserByID(props.registro.id);
     if (resp.isValid) {
       dataCard.value = <UserComplete>mappingObject(d, resp.result);
     } else dataCard.value = d;
@@ -240,6 +235,8 @@ const callSave = async () => {
   // on OK, it is REQUIRED to
   // call onDialogOK (with optional payload)
   const payload = <UserComplete>JSON.parse(JSON.stringify(dataCard.value));
+  const id = payload.Id;
+
   if (props.modo == 'NEW') {
     // delete payload.id;
     const save = convertRecord(payload);
@@ -249,7 +246,7 @@ const callSave = async () => {
       completeName: save.completeName,
       email: save.email,
       password: save.password,
-      role: save.RolName,
+      role: save.Role,
     });
     if (resp.isValid) {
       onDialogOK(resp.result);
@@ -263,10 +260,11 @@ const callSave = async () => {
     const save = convertRecord(payload);
 
     const resp = await userUpdate(<UserEdit>{
-      username: save.userName,
-      completeName: save.completeName,
-      email: save.email,
-      role: save.RolName,
+      Id: ID.value,
+      UserName: save.userName,
+      CompleteName: save.completeName,
+      Email: save.email,
+      Role: save.Role,
     });
     if (resp.isValid) {
       onDialogOK(resp.result);
@@ -283,29 +281,14 @@ const callSave = async () => {
 
 const convertRecord = (payload: UserComplete): UserComplete => {
   return {
-    Id: payload.Id,
+    Id: ID.value,
     completeName: payload.completeName,
     userName: payload.userName,
     password: payload.password,
     email: payload.email,
-    RolName: payload.RolName,
+    Role: payload.Role,
   };
 };
-
-// const callDelete = async () => {
-//   console.log('Estoy en callDelete');
-//   let payload = JSON.parse(JSON.stringify(dataCard.value));
-//   console.log(payload);
-//   const resp = await getUserDelByID(payload.id);
-//   if (resp.isValid) {
-//     onDialogOK(resp.result);
-//   } else {
-//     $q.notify({
-//       type: 'negative',
-//       message: resp.message,
-//     });
-//   }
-// };
 
 const onOKClick = () => {
   myForm.value.validate().then((success: User) => {

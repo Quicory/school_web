@@ -58,7 +58,7 @@ export const getUserNew = async (User: UserNew): Promise<UserResponseOne> => {
 
   try {
     const { data } = await api.post<UserResponseOne>(
-      '/api/Auth/registration',
+      '/api/Auth/registeration',
       User
     );
     return data;
@@ -72,14 +72,14 @@ export const getUserNew = async (User: UserNew): Promise<UserResponseOne> => {
   }
 };
 
-export const getUserEdit = async (
-  UserComplete: UserEdit
-): Promise<UserResponseOne> => {
+export const getUserEdit = async (user: UserEdit): Promise<UserResponseOne> => {
   const token = LocalStorage.getItem('token');
   api.defaults.headers.common = { Authorization: `bearer ${token}` };
 
   try {
-    const { data } = await api.put<UserResponseOne>('/api/User', UserComplete);
+    console.log('estoy aqui: getUserEdit');
+    console.log('UserComplete', user);
+    const { data } = await api.put<UserResponseOne>('/api/User', user);
     return data;
   } catch (error) {
     console.error(error);
